@@ -1,0 +1,414 @@
+
+-- STAJ TAKİP SİSTEMİ - Veritabanı Oluşturma
+
+-- Toplam Tablo Sayısı: 46
+--
+-- BAĞIMSIZ TABLOLAR (14):
+--   ULKE, DIL, EGITIM_TURU, PROJE_TURU, ETKINLIK_TURU,
+--   SEKTOR, TEKNOLOJI, STAJ_TURU, CALISMA_SEKLI,
+--   BASVURU_DURUMU, GOREV_POZISYON,
+--   ROL, KURUM, YETENEK_TURU
+--
+-- 1:N İLİŞKİLİ TABLOLAR (19):
+--   IL, ILCE, UNIVERSITE, SIRKET, DEPARTMAN, SUBE, ETKINLIK,
+--   OGRENCI, FAKULTE, BOLUM, EGITIM, PROJE,
+--   SERTIFIKA, SIRKET_YETKILISI, STAJ_ILANI,
+--   BASVURU, MULAKAT, STAJ_SURECI, YETENEK
+--
+-- M:N ARA TABLOLAR (13):
+--   OGRENCI_EGITIM, OGRENCI_DIL, OGRENCI_SERTIFIKA,
+--   SERTIFIKA_YETENEK, PROJE_TEKNOLOJI, PROJE_YETENEK,
+--   YETENEK_MULAKAT, YETENEK_BASVURU, YETENEK_ILAN,
+--   OGRENCI_ETKINLIK_ROL, SIRKET_SEKTOR,
+--   YETKILI_BASVURU, ILAN_DEPARTMAN
+
+-- Veritabanı oluşturma
+CREATE DATABASE StajTakipDB;
+GO
+
+USE StajTakipDB;
+GO
+
+
+-- 1. BAĞIMSIZ TABLOLAR (FK bağımlılığı yok)
+
+
+-- ÜLKE tablosu
+CREATE TABLE ULKE (
+    Ulke_ID INT PRIMARY KEY,
+    Ulke_Adi NVARCHAR(100) NOT NULL,
+    Ulke_Kodu NVARCHAR(10)
+);
+
+-- DİL tablosu
+CREATE TABLE DIL (
+    Dil_ID INT PRIMARY KEY,
+    Dil_Adi NVARCHAR(100) NOT NULL
+);
+
+-- EĞİTİM TÜRÜ tablosu
+CREATE TABLE EGITIM_TURU (
+    Egitim_Turu_ID INT PRIMARY KEY,
+    Egitim_Turu_Adi NVARCHAR(100)
+);
+
+-- PROJE TÜRÜ tablosu
+CREATE TABLE PROJE_TURU (
+    Proje_Turu_ID INT PRIMARY KEY,
+    ProjeTur_Adi NVARCHAR(100)
+);
+
+-- ETKİNLİK TÜRÜ tablosu
+CREATE TABLE ETKINLIK_TURU (
+    Etkinlik_Tur_ID INT PRIMARY KEY,
+    Etkinlik_Tur_Adi NVARCHAR(100)
+);
+
+-- SEKTÖR tablosu
+CREATE TABLE SEKTOR (
+    Sektor_ID INT PRIMARY KEY,
+    Sektor_Adi NVARCHAR(150)
+);
+
+-- TEKNOLOJİ tablosu
+CREATE TABLE TEKNOLOJI (
+    Teknoloji_ID INT PRIMARY KEY,
+    Teknoloji_Adi NVARCHAR(100)
+);
+
+-- STAJ TÜRÜ tablosu
+CREATE TABLE STAJ_TURU (
+    Staj_Tur_ID INT PRIMARY KEY,
+    Staj_Tur_Adi NVARCHAR(100)
+);
+
+-- ÇALIŞMA ŞEKLİ tablosu
+CREATE TABLE CALISMA_SEKLI (
+    Calisma_Sekli_ID INT PRIMARY KEY,
+    Calisma_Sekli_Adi NVARCHAR(100)
+);
+
+-- BAŞVURU DURUMU tablosu
+CREATE TABLE BASVURU_DURUMU (
+    Basvuru_Durumu_ID INT PRIMARY KEY,
+    Basvuru_Durumu_Adi NVARCHAR(100)
+);
+
+-- GÖREV / POZİSYON tablosu
+CREATE TABLE GOREV_POZISYON (
+    Gorev_ID INT PRIMARY KEY,
+    Gorev_Adi NVARCHAR(150)
+);
+
+
+
+-- ROL tablosu
+CREATE TABLE ROL (
+    Rol_ID INT PRIMARY KEY,
+    Rol_Adi NVARCHAR(100)
+);
+
+-- KURUM tablosu
+CREATE TABLE KURUM (
+    Kurum_ID INT PRIMARY KEY,
+    Kurum_Adi NVARCHAR(200)
+);
+
+-- YETENEK TÜRÜ tablosu
+CREATE TABLE YETENEK_TURU (
+    Yetenek_Tur_ID INT PRIMARY KEY,
+    Yetenek_Tur_Adi NVARCHAR(100)
+);
+
+-- YETENEK tablosu (YETENEK TÜRÜ'ne bağlı - TİPİDİR ilişkisi)
+CREATE TABLE YETENEK (
+    Yetenek_ID INT PRIMARY KEY,
+    Yetenek_Aciklamasi NVARCHAR(500),
+    Yetenek_Tur_ID INT FOREIGN KEY REFERENCES YETENEK_TURU(Yetenek_Tur_ID)
+);
+
+
+-- 2. 1:N İLİŞKİLİ TABLOLAR (FK bağımlılığı var)
+
+
+-- İL tablosu (ÜLKE'ye bağlı)
+CREATE TABLE IL (
+    Il_ID INT PRIMARY KEY,
+    Il_Adi NVARCHAR(100),
+    Ulke_ID INT FOREIGN KEY REFERENCES ULKE(Ulke_ID)
+);
+
+-- İLÇE tablosu (İL'e bağlı)
+
+CREATE TABLE ILCE (
+    Ilce_ID INT PRIMARY KEY,
+    Ilce_Adi NVARCHAR(100),
+    Il_ID INT FOREIGN KEY REFERENCES IL(Il_ID)
+);
+
+-- ÜNİVERSİTE tablosu 
+CREATE TABLE UNIVERSITE (
+    Universite_ID INT PRIMARY KEY,
+    Universite_Adi NVARCHAR(200),
+    Ilce_ID INT FOREIGN KEY REFERENCES ILCE(Ilce_ID)
+);
+
+-- ŞİRKET tablosu 
+CREATE TABLE SIRKET (
+    Sirket_ID INT PRIMARY KEY,
+    Sirket_Adi NVARCHAR(200),
+    Kurulus_Yili INT,
+    Sirket_Acik_Adresi NVARCHAR(300),
+    Web_Adresi NVARCHAR(300),
+    E_Posta NVARCHAR(150),
+    Telefon_Numarasi NVARCHAR(20)
+);
+
+-- DEPARTMAN tablosu (ŞİRKET'e bağlı - SAHİPTİR ilişkisi)
+CREATE TABLE DEPARTMAN (
+    Departman_ID INT PRIMARY KEY,
+    Departman_Adi NVARCHAR(150),
+    Sirket_ID INT FOREIGN KEY REFERENCES SIRKET(Sirket_ID)
+);
+
+-- ŞUBE tablosu (ŞİRKET ve İLÇE'ye bağlı)
+CREATE TABLE SUBE (
+    Sube_ID INT PRIMARY KEY,
+    Sube_Adi NVARCHAR(200),
+    Acik_Adres NVARCHAR(300),
+    Sube_Telefonu NVARCHAR(20),
+    Sube_E_Posta NVARCHAR(150),
+    Sirket_ID INT FOREIGN KEY REFERENCES SIRKET(Sirket_ID),
+    Ilce_ID INT FOREIGN KEY REFERENCES ILCE(Ilce_ID)
+);
+
+-- ETKİNLİK tablosu (ŞİRKET, ÜNİVERSİTE, ETKİNLİK TÜRÜ ve İLÇE'ye bağlı)
+
+CREATE TABLE ETKINLIK (
+    Etkinlik_ID INT PRIMARY KEY,
+    Etkinlik_Adi NVARCHAR(200),
+    Yapildigi_Tarih DATE,
+    Bina_Salon_Adi NVARCHAR(200),
+    Sirket_ID INT FOREIGN KEY REFERENCES SIRKET(Sirket_ID),
+    Universite_ID INT FOREIGN KEY REFERENCES UNIVERSITE(Universite_ID),
+    Etkinlik_Tur_ID INT FOREIGN KEY REFERENCES ETKINLIK_TURU(Etkinlik_Tur_ID),
+    Ilce_ID INT FOREIGN KEY REFERENCES ILCE(Ilce_ID)
+);
+
+-- ÖĞRENCİ tablosu (İLÇE'ye bağlı - YAŞAR ilişkisi)
+CREATE TABLE OGRENCI (
+    Ogrenci_ID INT PRIMARY KEY,
+    Ad NVARCHAR(100),
+    Soyad NVARCHAR(100),
+    Dogum_Tarihi DATE,
+    TC_Kimlik NVARCHAR(11) UNIQUE,
+    Telefon_Numarasi NVARCHAR(20),
+    E_Posta NVARCHAR(150) UNIQUE,
+    Adres NVARCHAR(300),
+    Kullanici_Sifresi NVARCHAR(200),
+    Sosyal_Medya NVARCHAR(300),
+    Cinsiyet NVARCHAR(20),
+    Ilce_ID INT FOREIGN KEY REFERENCES ILCE(Ilce_ID)
+);
+
+-- FAKÜLTE tablosu (ÜNİVERSİTE'ye bağlı)
+CREATE TABLE FAKULTE (
+    Fakulte_ID INT PRIMARY KEY,
+    Fakulte_Adi NVARCHAR(200),
+    Universite_ID INT FOREIGN KEY REFERENCES UNIVERSITE(Universite_ID)
+);
+
+-- BÖLÜM tablosu (FAKÜLTE'ye bağlı)
+CREATE TABLE BOLUM (
+    Bolum_ID INT PRIMARY KEY,
+    Bolum_Adi NVARCHAR(200),
+    Fakulte_ID INT FOREIGN KEY REFERENCES FAKULTE(Fakulte_ID)
+);
+
+-- EĞİTİM tablosu (BÖLÜM ve EĞİTİM TÜRÜ'ne bağlı)
+CREATE TABLE EGITIM (
+    Egitim_ID INT PRIMARY KEY,
+    Baslangic_Tarihi DATE,
+    Not_Ortalamasi DECIMAL(4,2),
+    Mezuniyet_Tarihi DATE,
+    Bolum_ID INT FOREIGN KEY REFERENCES BOLUM(Bolum_ID),
+    Egitim_Turu_ID INT FOREIGN KEY REFERENCES EGITIM_TURU(Egitim_Turu_ID)
+);
+
+-- PROJE tablosu (ÖĞRENCİ ve PROJE TÜRÜ'ne bağlı)
+CREATE TABLE PROJE (
+    Proje_ID INT PRIMARY KEY,
+    Proje_Basligi NVARCHAR(200),
+    Proje_Aciklamasi NVARCHAR(1000),
+    GithubPortfolyo NVARCHAR(300),
+    Ogrenci_ID INT FOREIGN KEY REFERENCES OGRENCI(Ogrenci_ID),
+    Proje_Turu_ID INT FOREIGN KEY REFERENCES PROJE_TURU(Proje_Turu_ID)
+);
+
+-- SERTİFİKA tablosu (KURUM'a bağlı - VERİR ilişkisi)
+CREATE TABLE SERTIFIKA (
+    Sertifika_ID INT PRIMARY KEY,
+    Sertifika_Adi NVARCHAR(200),
+    Kurum_ID INT FOREIGN KEY REFERENCES KURUM(Kurum_ID)
+);
+
+-- ŞİRKET YETKİLİSİ tablosu (ŞİRKET ve GÖREV/POZİSYON'a bağlı)
+
+CREATE TABLE SIRKET_YETKILISI (
+    Yetkili_TC NVARCHAR(11) PRIMARY KEY,
+    Ad NVARCHAR(100),
+    Soyad NVARCHAR(100),
+    E_Posta NVARCHAR(150),
+    Telefon_Numarasi NVARCHAR(20),
+    Sirket_ID INT FOREIGN KEY REFERENCES SIRKET(Sirket_ID),
+    Gorev_ID INT FOREIGN KEY REFERENCES GOREV_POZISYON(Gorev_ID)
+);
+
+-- STAJ İLANI tablosu (ŞUBE, STAJ TÜRÜ, ÇALIŞMA ŞEKLİ'ne bağlı)
+CREATE TABLE STAJ_ILANI (
+    Ilan_No INT PRIMARY KEY,
+    Ilan_Basligi NVARCHAR(200),
+    Ilan_Aciklamasi NVARCHAR(1000),
+    Staj_Ilani_Acik_Adresi NVARCHAR(300),
+    Aktiflik_Durumu NVARCHAR(50),
+    Kontenjan_Sayisi INT,
+    Yayinlanma_Tarihi DATE,
+    Bitis_Tarihi DATE,
+    Sube_ID INT FOREIGN KEY REFERENCES SUBE(Sube_ID),
+    Staj_Tur_ID INT FOREIGN KEY REFERENCES STAJ_TURU(Staj_Tur_ID),
+    Calisma_Sekli_ID INT FOREIGN KEY REFERENCES CALISMA_SEKLI(Calisma_Sekli_ID),
+    Gorev_ID INT FOREIGN KEY REFERENCES GOREV_POZISYON(Gorev_ID)
+);
+
+-- BAŞVURU tablosu (ÖĞRENCİ, STAJ İLANI, BAŞVURU DURUMU'na bağlı)
+CREATE TABLE BASVURU (
+    Basvuru_ID INT PRIMARY KEY,
+    Basvuru_Tarihi DATE,
+    Aciklama NVARCHAR(500),
+    Ogrenci_ID INT FOREIGN KEY REFERENCES OGRENCI(Ogrenci_ID),
+    Ilan_No INT FOREIGN KEY REFERENCES STAJ_ILANI(Ilan_No),
+    Basvuru_Durumu_ID INT FOREIGN KEY REFERENCES BASVURU_DURUMU(Basvuru_Durumu_ID)
+);
+
+-- MÜLAKAT tablosu (BAŞVURU'ya bağlı - DEĞERLENDİRİLİR ilişkisi)
+CREATE TABLE MULAKAT (
+    Mulakat_ID INT PRIMARY KEY,
+    Mulakat_Tarihi DATE,
+    Mulakat_Saati NVARCHAR(10),
+    Mulakat_Notlari NVARCHAR(1000),
+    Mulakat_Sonucu NVARCHAR(100),
+    Mulakat_Turu NVARCHAR(100),
+    Basvuru_ID INT FOREIGN KEY REFERENCES BASVURU(Basvuru_ID)
+);
+
+-- STAJ SÜRECİ tablosu (BAŞVURU, DEPARTMAN, ŞİRKET YETKİLİSİ'ne bağlı)
+CREATE TABLE STAJ_SURECI (
+    Staj_ID INT PRIMARY KEY,
+    Staj_Baslangic_Tarihi DATE,
+    Staj_Bitis_Tarihi DATE,
+    Surecin_Aciklamasi NVARCHAR(500),
+    Sirket_Degerlendirme_Notu INT,
+    Ogrenci_Degerlendirme_Notu INT,
+    Ogrencinin_Sirkete_Yorumu NVARCHAR(500),
+    Basvuru_ID INT FOREIGN KEY REFERENCES BASVURU(Basvuru_ID),
+    Departman_ID INT FOREIGN KEY REFERENCES DEPARTMAN(Departman_ID),
+    Yetkili_TC NVARCHAR(11) FOREIGN KEY REFERENCES SIRKET_YETKILISI(Yetkili_TC)
+);
+
+-- 3. M:N İLİŞKİ (ARA) TABLOLARI
+
+
+-- ÖĞRENCİ — TAMAMLADI — EĞİTİM (M:N)
+CREATE TABLE OGRENCI_EGITIM (
+    Ogrenci_ID INT FOREIGN KEY REFERENCES OGRENCI(Ogrenci_ID),
+    Egitim_ID INT FOREIGN KEY REFERENCES EGITIM(Egitim_ID),
+    PRIMARY KEY (Ogrenci_ID, Egitim_ID)
+);
+
+-- ÖĞRENCİ — BİLİR — DİL (M:N)
+
+CREATE TABLE OGRENCI_DIL (
+    Ogrenci_ID INT FOREIGN KEY REFERENCES OGRENCI(Ogrenci_ID),
+    Dil_ID INT FOREIGN KEY REFERENCES DIL(Dil_ID),
+    PRIMARY KEY (Ogrenci_ID, Dil_ID)
+);
+
+-- ÖĞRENCİ — ALDI — SERTİFİKA (M:N)
+CREATE TABLE OGRENCI_SERTIFIKA (
+    Ogrenci_ID INT FOREIGN KEY REFERENCES OGRENCI(Ogrenci_ID),
+    Sertifika_ID INT FOREIGN KEY REFERENCES SERTIFIKA(Sertifika_ID),
+    Alinan_Tarih DATE,
+    Gecerlilik_Tarihi DATE,
+    PRIMARY KEY (Ogrenci_ID, Sertifika_ID)
+);
+
+-- SERTİFİKA — KANITLAR — YETENEK (M:N)
+CREATE TABLE SERTIFIKA_YETENEK (
+    Sertifika_ID INT FOREIGN KEY REFERENCES SERTIFIKA(Sertifika_ID),
+    Yetenek_ID INT FOREIGN KEY REFERENCES YETENEK(Yetenek_ID),
+    PRIMARY KEY (Sertifika_ID, Yetenek_ID)
+);
+
+-- PROJE — KULLANIR — TEKNOLOJİ (M:N)
+CREATE TABLE PROJE_TEKNOLOJI (
+    Proje_ID INT FOREIGN KEY REFERENCES PROJE(Proje_ID),
+    Teknoloji_ID INT FOREIGN KEY REFERENCES TEKNOLOJI(Teknoloji_ID),
+    PRIMARY KEY (Proje_ID, Teknoloji_ID)
+);
+
+-- PROJE — KANITLAR — YETENEK (M:N)
+CREATE TABLE PROJE_YETENEK (
+    Proje_ID INT FOREIGN KEY REFERENCES PROJE(Proje_ID),
+    Yetenek_ID INT FOREIGN KEY REFERENCES YETENEK(Yetenek_ID),
+    PRIMARY KEY (Proje_ID, Yetenek_ID)
+);
+
+-- YETENEK — DEĞERLENDİRİLİR — MÜLAKAT (M:N)
+CREATE TABLE YETENEK_MULAKAT (
+    Yetenek_ID INT FOREIGN KEY REFERENCES YETENEK(Yetenek_ID),
+    Mulakat_ID INT FOREIGN KEY REFERENCES MULAKAT(Mulakat_ID),
+    PRIMARY KEY (Yetenek_ID, Mulakat_ID)
+);
+
+-- YETENEK — GÖSTERİLİR — BAŞVURU (M:N)
+CREATE TABLE YETENEK_BASVURU (
+    Yetenek_ID INT FOREIGN KEY REFERENCES YETENEK(Yetenek_ID),
+    Basvuru_ID INT FOREIGN KEY REFERENCES BASVURU(Basvuru_ID),
+    PRIMARY KEY (Yetenek_ID, Basvuru_ID)
+);
+
+-- YETENEK — GEREKTİRİR — STAJ İLANI (M:N)
+CREATE TABLE YETENEK_ILAN (
+    Yetenek_ID INT FOREIGN KEY REFERENCES YETENEK(Yetenek_ID),
+    Ilan_No INT FOREIGN KEY REFERENCES STAJ_ILANI(Ilan_No),
+    PRIMARY KEY (Yetenek_ID, Ilan_No)
+);
+
+-- ÖĞRENCİ — KATILDI — ETKİNLİK (M:N, ROL bilgisi ile)
+CREATE TABLE OGRENCI_ETKINLIK_ROL (
+    Ogrenci_ID INT FOREIGN KEY REFERENCES OGRENCI(Ogrenci_ID),
+    Etkinlik_ID INT FOREIGN KEY REFERENCES ETKINLIK(Etkinlik_ID),
+    Rol_ID INT FOREIGN KEY REFERENCES ROL(Rol_ID),
+    PRIMARY KEY (Ogrenci_ID, Etkinlik_ID, Rol_ID)
+);
+
+-- ŞİRKET — FAALİYET GÖSTERİR — SEKTÖR (M:N)
+CREATE TABLE SIRKET_SEKTOR (
+    Sirket_ID INT FOREIGN KEY REFERENCES SIRKET(Sirket_ID),
+    Sektor_ID INT FOREIGN KEY REFERENCES SEKTOR(Sektor_ID),
+    PRIMARY KEY (Sirket_ID, Sektor_ID)
+);
+
+-- ŞİRKET YETKİLİSİ — DEĞERLENDİRİR — BAŞVURU (M:N)
+CREATE TABLE YETKILI_BASVURU (
+    Yetkili_TC NVARCHAR(11) FOREIGN KEY REFERENCES SIRKET_YETKILISI(Yetkili_TC),
+    Basvuru_ID INT FOREIGN KEY REFERENCES BASVURU(Basvuru_ID),
+    PRIMARY KEY (Yetkili_TC, Basvuru_ID)
+);
+
+-- STAJ İLANI — AİTTİR — DEPARTMAN (M:N)
+CREATE TABLE ILAN_DEPARTMAN (
+    Ilan_No INT FOREIGN KEY REFERENCES STAJ_ILANI(Ilan_No),
+    Departman_ID INT FOREIGN KEY REFERENCES DEPARTMAN(Departman_ID),
+    PRIMARY KEY (Ilan_No, Departman_ID)
+);
